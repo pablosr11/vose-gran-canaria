@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 VOSE Gran Canaria</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #334155;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --accent: #38bdf8;
+    --today-ring: #facc15;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    padding: 30px 0 20px;
+  }
+  header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #38bdf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  header .subtitle {
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin: 16px 0 30px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .month-block {
+    margin-bottom: 40px;
+  }
+  .month-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    padding-left: 4px;
+    color: var(--accent);
+  }
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    background: var(--surface2);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .day-header {
+    background: var(--surface);
+    text-align: center;
+    padding: 10px 4px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .day-cell {
+    background: var(--surface);
+    min-height: 100px;
+    padding: 6px;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .day-cell.empty {
+    background: var(--bg);
+    min-height: 60px;
+  }
+  .day-cell.past {
+    opacity: 0.45;
+  }
+  .day-cell.today {
+    box-shadow: inset 0 0 0 2px var(--today-ring);
+    opacity: 1;
+  }
+  .day-cell.has-films:not(.past):hover {
+    background: var(--surface2);
+  }
+  .day-number {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .day-cell.today .day-number {
+    color: var(--today-ring);
+  }
+  .day-cell.has-films .day-number {
+    color: var(--text);
+  }
+  .films-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .film-chip {
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    line-height: 1.3;
+    cursor: default;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 3px;
+  }
+  .film-time {
+    font-weight: 700;
+    font-size: 0.7rem;
+    flex-shrink: 0;
+  }
+  .film-title-text {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+    flex: 1;
+    min-width: 0;
+  }
+  .film-cinema-badge {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 3px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  footer {
+    text-align: center;
+    padding: 30px 0;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    body { padding: 10px; }
+    .day-cell { min-height: 70px; padding: 4px; }
+    .film-chip { font-size: 0.6rem; padding: 2px 4px; }
+    .film-cinema-badge { display: none; }
+    .film-time { font-size: 0.6rem; }
+    header h1 { font-size: 1.5rem; }
+    .month-title { font-size: 1.1rem; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>🎬 VOSE Gran Canaria</h1>
+  <p class="subtitle">Films in original version (VOSE/VO) at cinemas in Gran Canaria</p>
+  <p class="subtitle">Updated: Monday, 9 February 2026 at 00:30</p>
+</header>
+
+<div class="legend"><span class="legend-item">
+      <span class="legend-dot" style="background:#f59e0b"></span>
+      Yelmo Premium Alisios
+    </span><span class="legend-item">
+      <span class="legend-dot" style="background:#3b82f6"></span>
+      Yelmo Las Arenas
+    </span><span class="legend-item">
+      <span class="legend-dot" style="background:#22c55e"></span>
+      Yelmo Vecindario
+    </span><span class="legend-item">
+      <span class="legend-dot" style="background:#ec4899"></span>
+      Artesiete Las Terrazas (Telde)
+    </span></div>
+
+
+    <div class="month-block">
+      <h2 class="month-title">Febrero 2026</h2>
+      <div class="calendar-grid">
+        <div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-header">Sun</div>
+  <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell past"><div class="day-number">1</div></div><div class="day-cell past"><div class="day-number">2</div></div><div class="day-cell past"><div class="day-number">3</div></div><div class="day-cell past"><div class="day-number">4</div></div><div class="day-cell past"><div class="day-number">5</div></div><div class="day-cell past"><div class="day-number">6</div></div><div class="day-cell past"><div class="day-number">7</div></div><div class="day-cell past"><div class="day-number">8</div></div><div class="day-cell today"><div class="day-number">9</div></div><div class="day-cell has-films"><div class="day-number">10</div><div class="films-list">
+          <div class="film-chip" style="background:#fce7f3;border-left:3px solid #ec4899;color:#9d174d"
+               title="PRIMATE — Artesiete Las Terrazas (Telde)&#10;19:30&#10;Versión Original">
+            <span class="film-time">19:30</span>
+            <span class="film-title-text">PRIMATE</span>
+            <span class="film-cinema-badge" style="background:#ec4899">Las Terrazas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Marty Supreme — Yelmo Las Arenas&#10;16:55&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">16:55</span>
+            <span class="film-title-text">Marty Supreme</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Rental Family (Familia de alquiler) — Yelmo Las Arenas&#10;18:05&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">18:05</span>
+            <span class="film-title-text">Rental Family (Familia de alquiler)</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Hamnet — Yelmo Las Arenas&#10;19:55&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:55</span>
+            <span class="film-title-text">Hamnet</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Tres adioses — Yelmo Las Arenas&#10;20:15&#10;ITALIANO SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:15</span>
+            <span class="film-title-text">Tres adioses</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Primate — Yelmo Las Arenas&#10;20:40&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:40</span>
+            <span class="film-title-text">Primate</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e"
+               title="Marty Supreme — Yelmo Premium Alisios&#10;17:15&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">17:15</span>
+            <span class="film-title-text">Marty Supreme</span>
+            <span class="film-cinema-badge" style="background:#f59e0b">Premium Alisios</span>
+          </div>
+          <div class="film-chip" style="background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e"
+               title="Hamnet — Yelmo Premium Alisios&#10;19:50&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:50</span>
+            <span class="film-title-text">Hamnet</span>
+            <span class="film-cinema-badge" style="background:#f59e0b">Premium Alisios</span>
+          </div>
+          <div class="film-chip" style="background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e"
+               title="Primate — Yelmo Premium Alisios&#10;20:30&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:30</span>
+            <span class="film-title-text">Primate</span>
+            <span class="film-cinema-badge" style="background:#f59e0b">Premium Alisios</span>
+          </div>
+          <div class="film-chip" style="background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e"
+               title="La asistenta — Yelmo Premium Alisios&#10;22:20&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">22:20</span>
+            <span class="film-title-text">La asistenta</span>
+            <span class="film-cinema-badge" style="background:#f59e0b">Premium Alisios</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Marty Supreme — Yelmo Vecindario&#10;17:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">17:00</span>
+            <span class="film-title-text">Marty Supreme</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Hamnet — Yelmo Vecindario&#10;19:50&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:50</span>
+            <span class="film-title-text">Hamnet</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Primate — Yelmo Vecindario&#10;20:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:00</span>
+            <span class="film-title-text">Primate</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Hellboy: El hombre retorcido — Yelmo Vecindario&#10;20:05&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:05</span>
+            <span class="film-title-text">Hellboy: El hombre retorcido</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div></div></div><div class="day-cell"><div class="day-number">11</div></div><div class="day-cell has-films"><div class="day-number">12</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Porco Rosso (Reestreno) — Yelmo Las Arenas&#10;19:00&#10;JAPONÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:00</span>
+            <span class="film-title-text">Porco Rosso (Reestreno)</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Interalia (Encore) - NATIONAL THEATRE 25-26 — Yelmo Las Arenas&#10;20:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:00</span>
+            <span class="film-title-text">Interalia (Encore) - NATIONAL THEATRE 25-26</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Porco Rosso (Reestreno) — Yelmo Vecindario&#10;19:00&#10;JAPONÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:00</span>
+            <span class="film-title-text">Porco Rosso (Reestreno)</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div></div></div><div class="day-cell"><div class="day-number">13</div></div><div class="day-cell has-films"><div class="day-number">14</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="The Rose: Come Back to Me — Yelmo Las Arenas&#10;16:00&#10;COREANO CON SUBTÍTULOS EN ESPAÑOL (VOSE)">
+            <span class="film-time">16:00</span>
+            <span class="film-title-text">The Rose: Come Back to Me</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="CENICIENTA REPOSICIÓN - ESPECIAL DE TEMPORADA — Yelmo Las Arenas&#10;18:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">18:00</span>
+            <span class="film-title-text">CENICIENTA REPOSICIÓN - ESPECIAL DE TEMPORADA</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell"><div class="day-number">15</div></div><div class="day-cell"><div class="day-number">16</div></div><div class="day-cell has-films"><div class="day-number">17</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Cumbres borrascosas — Yelmo Las Arenas&#10;19:40&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:40</span>
+            <span class="film-title-text">Cumbres borrascosas</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Interalia (Encore) - NATIONAL THEATRE 25-26 — Yelmo Las Arenas&#10;20:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:00</span>
+            <span class="film-title-text">Interalia (Encore) - NATIONAL THEATRE 25-26</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e"
+               title="Cumbres borrascosas — Yelmo Premium Alisios&#10;19:50&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:50</span>
+            <span class="film-title-text">Cumbres borrascosas</span>
+            <span class="film-cinema-badge" style="background:#f59e0b">Premium Alisios</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Cumbres borrascosas — Yelmo Vecindario&#10;19:45&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:45</span>
+            <span class="film-title-text">Cumbres borrascosas</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div></div></div><div class="day-cell has-films"><div class="day-number">18</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="CHASE ATLANTIC: LOST IN HEAVEN — Yelmo Las Arenas&#10;19:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">19:00</span>
+            <span class="film-title-text">CHASE ATLANTIC: LOST IN HEAVEN</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell"><div class="day-number">19</div></div><div class="day-cell"><div class="day-number">20</div></div><div class="day-cell"><div class="day-number">21</div></div><div class="day-cell"><div class="day-number">22</div></div><div class="day-cell"><div class="day-number">23</div></div><div class="day-cell has-films"><div class="day-number">24</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="Greenland 2 — Yelmo Las Arenas&#10;20:30&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:30</span>
+            <span class="film-title-text">Greenland 2</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div>
+          <div class="film-chip" style="background:#fef3c7;border-left:3px solid #f59e0b;color:#92400e"
+               title="Greenland 2 — Yelmo Premium Alisios&#10;20:30&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:30</span>
+            <span class="film-title-text">Greenland 2</span>
+            <span class="film-cinema-badge" style="background:#f59e0b">Premium Alisios</span>
+          </div>
+          <div class="film-chip" style="background:#dcfce7;border-left:3px solid #22c55e;color:#166534"
+               title="Greenland 2 — Yelmo Vecindario&#10;20:25&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:25</span>
+            <span class="film-title-text">Greenland 2</span>
+            <span class="film-cinema-badge" style="background:#22c55e">Vecindario</span>
+          </div></div></div><div class="day-cell"><div class="day-number">25</div></div><div class="day-cell"><div class="day-number">26</div></div><div class="day-cell"><div class="day-number">27</div></div><div class="day-cell"><div class="day-number">28</div></div><div class="day-cell empty"></div></div></div>
+    <div class="month-block">
+      <h2 class="month-title">Marzo 2026</h2>
+      <div class="calendar-grid">
+        <div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-header">Sun</div>
+  <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell"><div class="day-number">1</div></div><div class="day-cell"><div class="day-number">2</div></div><div class="day-cell"><div class="day-number">3</div></div><div class="day-cell has-films"><div class="day-number">4</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="AURORA: What Happened To The Earth? — Yelmo Las Arenas&#10;20:00&#10;INGLÉS SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">20:00</span>
+            <span class="film-title-text">AURORA: What Happened To The Earth?</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell has-films"><div class="day-number">5</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="ENHYPEN (WALK THE LINE SUMMER EDITION) IN CINEMAS — Yelmo Las Arenas&#10;18:00&#10;COREANO CON SUBTÍTULOS EN ESPAÑOL (VOSE)">
+            <span class="film-time">18:00</span>
+            <span class="film-title-text">ENHYPEN (WALK THE LINE SUMMER EDITION) IN CINEMAS</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell"><div class="day-number">6</div></div><div class="day-cell has-films"><div class="day-number">7</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="ENHYPEN (WALK THE LINE SUMMER EDITION) IN CINEMAS — Yelmo Las Arenas&#10;18:10&#10;COREANO CON SUBTÍTULOS EN ESPAÑOL (VOSE)">
+            <span class="film-time">18:10</span>
+            <span class="film-title-text">ENHYPEN (WALK THE LINE SUMMER EDITION) IN CINEMAS</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell"><div class="day-number">8</div></div><div class="day-cell"><div class="day-number">9</div></div><div class="day-cell"><div class="day-number">10</div></div><div class="day-cell"><div class="day-number">11</div></div><div class="day-cell"><div class="day-number">12</div></div><div class="day-cell"><div class="day-number">13</div></div><div class="day-cell"><div class="day-number">14</div></div><div class="day-cell"><div class="day-number">15</div></div><div class="day-cell"><div class="day-number">16</div></div><div class="day-cell"><div class="day-number">17</div></div><div class="day-cell"><div class="day-number">18</div></div><div class="day-cell"><div class="day-number">19</div></div><div class="day-cell"><div class="day-number">20</div></div><div class="day-cell has-films"><div class="day-number">21</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="TRISTAN UND ISOLDE - MET LIVE 25-26 — Yelmo Las Arenas&#10;16:00&#10;ALEMÁN SUBTITULADO EN ESPAÑOL (VOSE)">
+            <span class="film-time">16:00</span>
+            <span class="film-title-text">TRISTAN UND ISOLDE - MET LIVE 25-26</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell"><div class="day-number">22</div></div><div class="day-cell"><div class="day-number">23</div></div><div class="day-cell"><div class="day-number">24</div></div><div class="day-cell"><div class="day-number">25</div></div><div class="day-cell"><div class="day-number">26</div></div><div class="day-cell"><div class="day-number">27</div></div><div class="day-cell"><div class="day-number">28</div></div><div class="day-cell"><div class="day-number">29</div></div><div class="day-cell"><div class="day-number">30</div></div><div class="day-cell"><div class="day-number">31</div></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div></div></div>
+    <div class="month-block">
+      <h2 class="month-title">Mayo 2026</h2>
+      <div class="calendar-grid">
+        <div class="day-header">Mon</div><div class="day-header">Tue</div><div class="day-header">Wed</div><div class="day-header">Thu</div><div class="day-header">Fri</div><div class="day-header">Sat</div><div class="day-header">Sun</div>
+  <div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell empty"></div><div class="day-cell"><div class="day-number">1</div></div><div class="day-cell has-films"><div class="day-number">2</div><div class="films-list">
+          <div class="film-chip" style="background:#dbeafe;border-left:3px solid #3b82f6;color:#1e40af"
+               title="EUGENE ONEGIN - MET LIVE 25-26 — Yelmo Las Arenas&#10;18:00&#10;SUBTÍTULOS ESPAÑOL">
+            <span class="film-time">18:00</span>
+            <span class="film-title-text">EUGENE ONEGIN - MET LIVE 25-26</span>
+            <span class="film-cinema-badge" style="background:#3b82f6">Las Arenas</span>
+          </div></div></div><div class="day-cell"><div class="day-number">3</div></div><div class="day-cell"><div class="day-number">4</div></div><div class="day-cell"><div class="day-number">5</div></div><div class="day-cell"><div class="day-number">6</div></div><div class="day-cell"><div class="day-number">7</div></div><div class="day-cell"><div class="day-number">8</div></div><div class="day-cell"><div class="day-number">9</div></div><div class="day-cell"><div class="day-number">10</div></div><div class="day-cell"><div class="day-number">11</div></div><div class="day-cell"><div class="day-number">12</div></div><div class="day-cell"><div class="day-number">13</div></div><div class="day-cell"><div class="day-number">14</div></div><div class="day-cell"><div class="day-number">15</div></div><div class="day-cell"><div class="day-number">16</div></div><div class="day-cell"><div class="day-number">17</div></div><div class="day-cell"><div class="day-number">18</div></div><div class="day-cell"><div class="day-number">19</div></div><div class="day-cell"><div class="day-number">20</div></div><div class="day-cell"><div class="day-number">21</div></div><div class="day-cell"><div class="day-number">22</div></div><div class="day-cell"><div class="day-number">23</div></div><div class="day-cell"><div class="day-number">24</div></div><div class="day-cell"><div class="day-number">25</div></div><div class="day-cell"><div class="day-number">26</div></div><div class="day-cell"><div class="day-number">27</div></div><div class="day-cell"><div class="day-number">28</div></div><div class="day-cell"><div class="day-number">29</div></div><div class="day-cell"><div class="day-number">30</div></div><div class="day-cell"><div class="day-number">31</div></div></div></div>
+
+<footer>
+  <p>Data from Yelmo Cines &amp; Artesiete APIs. Ocine 7 Palmas &amp; Cinesa El Muelle not yet included (need browser scraping).</p>
+  <p>🎥 32 showings found across 4 cinemas</p>
+</footer>
+</body>
+</html>
