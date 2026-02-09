@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 REPORT_DIR="$PROJECT_DIR/reports"
 DATE=$(date +%Y-%m-%d)
-NODE="/Users/ps/.nvm/versions/node/v20.7.0/bin/node"
+NODE="/home/psiesta11/.nvm/versions/node/v20.18.1/bin/node"
 
 mkdir -p "$REPORT_DIR"
 
