@@ -292,6 +292,32 @@ async function main() {
     errors.push(`Artesiete: ${err.message}`);
   }
 
+  // Headless Browser-based (Ocine, Cinesa)
+  try {
+    const { execSync } = await import('child_process');
+    const projectDir = new URL('..', import.meta.url).pathname;
+    console.error("\n🎬 Fetching Ocine & Cinesa (headless browser)...");
+    const rawHeadless = execSync(`node ${projectDir}scripts/scrape-headless.js`, { encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] });
+    const headlessResults = JSON.parse(rawHeadless);
+    console.error(`  ✓ Found ${headlessResults.length} VO/VOSE showings from headless browser`);
+    allResults.push(...headlessResults);
+  } catch (err) {
+    // console.error(`  ✗ Browser scraping skipped or failed: ${err.message}`);
+  }
+
+  // Browser-based cinemas (Ocine, Cinesa)
+  try {
+    const { execSync } = await import('child_process');
+    const projectDir = new URL('..', import.meta.url).pathname;
+    console.error("\n🎬 Fetching Ocine & Cinesa (headless browser)...");
+    const rawHeadless = execSync(`node ${projectDir}/scripts/scrape-headless.js`, { encoding: 'utf8' });
+    const headlessResults = JSON.parse(rawHeadless);
+    console.error(`  ✓ Found ${headlessResults.length} VOSE showings from headless browser`);
+    allResults.push(...headlessResults);
+  } catch (err) {
+    console.error(`  ✗ Browser scraping failed: ${err.message}`);
+  }
+
   // Deduplicate
   const seen = new Set();
   const unique = allResults.filter((r) => {

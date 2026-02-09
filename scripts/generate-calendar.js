@@ -65,6 +65,8 @@ const CINEMA_COLORS = {
   "Yelmo Las Arenas": { bg: "#dbeafe", border: "#3b82f6", text: "#1e40af", badge: "#3b82f6" },
   "Yelmo Vecindario": { bg: "#dcfce7", border: "#22c55e", text: "#166534", badge: "#22c55e" },
   "Artesiete Las Terrazas (Telde)": { bg: "#fce7f3", border: "#ec4899", text: "#9d174d", badge: "#ec4899" },
+  "Ocine Premium 7 Palmas": { bg: "#ede9fe", border: "#8b5cf6", text: "#5b21b6", badge: "#8b5cf6" },
+  "Cinesa El Muelle": { bg: "#fee2e2", border: "#ef4444", text: "#991b1b", badge: "#ef4444" },
 };
 
 function cinemaColor(cinema) {
@@ -130,12 +132,14 @@ function buildMonthHtml(yearMonth) {
           .replace("Artesiete ", "")
           .replace(" (Telde)", "");
         html += `
-          <div class="film-chip" style="background:${c.bg};border-left:3px solid ${c.border};color:${c.text}"
-               title="${escapeHtml(film.title)} — ${escapeHtml(film.cinema)}&#10;${film.times.join(", ")}&#10;${film.language || ""}">
-            <span class="film-time">${film.times[0]}</span>
-            <span class="film-title-text">${escapeHtml(film.title)}</span>
-            <span class="film-cinema-badge" style="background:${c.badge}">${escapeHtml(shortCinema)}</span>
-          </div>`;
+          <a href="${film.url || "#"}" target="_blank" class="film-link">
+            <div class="film-chip" style="background:${c.bg};border-left:3px solid ${c.border};color:${c.text}"
+                 title="${escapeHtml(film.title)} — ${escapeHtml(film.cinema)}&#10;${film.times.join(", ")}&#10;${film.language || ""}">
+              <span class="film-time">${film.times[0]}</span>
+              <span class="film-title-text">${escapeHtml(film.title)}</span>
+              <span class="film-cinema-badge" style="background:${c.badge}">${escapeHtml(shortCinema)}</span>
+            </div>
+          </a>`;
       }
       html += `</div>`;
     }
@@ -302,11 +306,20 @@ const pageHtml = `<!DOCTYPE html>
     border-radius: 4px;
     font-size: 0.7rem;
     line-height: 1.3;
-    cursor: default;
+    cursor: pointer;
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
     gap: 3px;
+    transition: transform 0.1s, filter 0.1s;
+  }
+  .film-chip:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+  .film-link {
+    text-decoration: none;
+    display: block;
   }
   .film-time {
     font-weight: 700;
@@ -363,7 +376,7 @@ ${buildLegend()}
 ${sortedMonths.map(buildMonthHtml).join("")}
 
 <footer>
-  <p>Data from Yelmo Cines &amp; Artesiete APIs. Ocine 7 Palmas &amp; Cinesa El Muelle not yet included (need browser scraping).</p>
+  <p>Data from Yelmo, Artesiete, Ocine &amp; Cinesa. Headless browser used for Ocine &amp; Cinesa scraping.</p>
   <p>🎥 ${data.totalFilms} showings found across ${[...new Set(data.films.map((f) => f.cinema))].length} cinemas</p>
 </footer>
 </body>
