@@ -46,3 +46,18 @@ FILM_COUNT=$(cat "$REPORT_DIR/$DATE.json" | "$NODE" -e "
 " 2>/dev/null || echo "0")
 
 echo "✓ Found $FILM_COUNT VOSE showings"
+
+# Auto-publish to GitHub Pages
+if git remote | grep -q 'origin'; then
+  echo "🚀 Publishing to GitHub Pages..."
+  cd "$PROJECT_DIR"
+  git add docs/index.html
+  # Only commit if there are changes
+  if ! git diff --cached --quiet; then
+    git commit -m "Update VOSE calendar: $DATE"
+    git push origin main # or master, depends on your default branch
+    echo "  ✓ Successfully pushed to GitHub"
+  else
+    echo "  (No changes to calendar, skipping push)"
+  fi
+fi
