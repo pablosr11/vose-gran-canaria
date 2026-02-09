@@ -17,7 +17,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 REPORT_DIR="$PROJECT_DIR/reports"
 DATE=$(date +%Y-%m-%d)
-NODE="/home/psiesta11/.nvm/versions/node/v20.18.1/bin/node"
+# Find node path
+if [ -f "/home/psiesta11/.nvm/versions/node/v20.18.1/bin/node" ]; then
+  NODE="/home/psiesta11/.nvm/versions/node/v20.18.1/bin/node"
+elif command -v node >/dev/null 2>&1; then
+  NODE=$(command -v node)
+else
+  NODE="/usr/local/bin/node"
+fi
 
 mkdir -p "$REPORT_DIR"
 
