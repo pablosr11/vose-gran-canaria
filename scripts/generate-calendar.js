@@ -74,7 +74,7 @@ function cinemaColor(cinema) {
 }
 
 function escapeHtml(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\"/g, "&quot;");
 }
 
 function buildMonthHtml(yearMonth) {
@@ -87,8 +87,9 @@ function buildMonthHtml(yearMonth) {
   let html = `
     <div class="month-block">
       <h2 class="month-title">${MONTH_NAMES_ES[m]} ${y}</h2>
-      <div class="calendar-grid">
-        ${DAY_NAMES.map((d) => `<div class="day-header">${d}</div>`).join("")}
+      <div class="calendar-scroll">
+        <div class="calendar-grid">
+          ${DAY_NAMES.map((d) => `<div class="day-header">${d}</div>`).join("")}
   `;
 
   // Empty cells before start
@@ -154,7 +155,7 @@ function buildMonthHtml(yearMonth) {
     html += `<div class="day-cell empty"></div>`;
   }
 
-  html += `</div></div>`;
+  html += `</div></div></div>`;
   return html;
 }
 
@@ -236,7 +237,7 @@ const pageHtml = `<!DOCTYPE html>
     flex-shrink: 0;
   }
   .month-block {
-    margin-bottom: 40px;
+    margin-bottom: 0;
   }
   .month-title {
     font-size: 1.4rem;
@@ -245,13 +246,19 @@ const pageHtml = `<!DOCTYPE html>
     padding-left: 4px;
     color: var(--accent);
   }
+  .calendar-scroll {
+    overflow-x: auto;
+    border-radius: 12px;
+    margin-bottom: 40px;
+    background: var(--surface2);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
   .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 2px;
     background: var(--surface2);
-    border-radius: 12px;
-    overflow: hidden;
+    min-width: 700px;
   }
   .day-header {
     background: var(--surface);
@@ -265,8 +272,8 @@ const pageHtml = `<!DOCTYPE html>
   }
   .day-cell {
     background: var(--surface);
-    min-height: 100px;
-    padding: 6px;
+    min-height: 120px;
+    padding: 8px;
     position: relative;
     transition: background 0.15s;
   }
@@ -280,15 +287,16 @@ const pageHtml = `<!DOCTYPE html>
   .day-cell.today {
     box-shadow: inset 0 0 0 2px var(--today-ring);
     opacity: 1;
+    z-index: 10;
   }
   .day-cell.has-films:not(.past):hover {
     background: var(--surface2);
   }
   .day-number {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text-dim);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
   .day-cell.today .day-number {
     color: var(--today-ring);
@@ -299,10 +307,14 @@ const pageHtml = `<!DOCTYPE html>
   .films-list {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
+  }
+  .film-link {
+    text-decoration: none;
+    display: block;
   }
   .film-chip {
-    padding: 3px 6px;
+    padding: 4px 8px;
     border-radius: 4px;
     font-size: 0.7rem;
     line-height: 1.3;
@@ -310,16 +322,12 @@ const pageHtml = `<!DOCTYPE html>
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
-    gap: 3px;
+    gap: 4px;
     transition: transform 0.1s, filter 0.1s;
   }
   .film-chip:hover {
     transform: translateY(-1px);
     filter: brightness(1.05);
-  }
-  .film-link {
-    text-decoration: none;
-    display: block;
   }
   .film-time {
     font-weight: 700;
@@ -355,10 +363,10 @@ const pageHtml = `<!DOCTYPE html>
 
   @media (max-width: 768px) {
     body { padding: 10px; }
-    .day-cell { min-height: 70px; padding: 4px; }
-    .film-chip { font-size: 0.6rem; padding: 2px 4px; }
+    .day-cell { min-height: 90px; padding: 4px; }
+    .film-chip { font-size: 0.65rem; padding: 2px 4px; }
     .film-cinema-badge { display: none; }
-    .film-time { font-size: 0.6rem; }
+    .film-time { font-size: 0.65rem; }
     header h1 { font-size: 1.5rem; }
     .month-title { font-size: 1.1rem; }
   }
